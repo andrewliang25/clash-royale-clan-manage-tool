@@ -75,16 +75,22 @@ func main() {
 	var DemoteList []string
 	var PromoteList []string
 	isColeaderCandidate := map[string]bool{}
+	isOldMember := map[string]bool{}
 
 	for _, ClanMember := range ClanMembersData.Items {
-		if ClanMember.Donations < 70 {
+		if ClanMember.Donations < 70 && isOldMember[ClanMember.Tag] {
 			DemoteList = append(DemoteList, ClanMember.Name)
-		} else if (ClanMember.Donations >= 350 && ClanMember.Role == "member") || (ClanMember.Donations >= 1000 && isColeaderCandidate[ClanMember.Name]) {
+		} else if (ClanMember.Donations >= 350 && ClanMember.Role == "member") || (ClanMember.Donations >= 1000 && isColeaderCandidate[ClanMember.Tag]) {
 			PromoteList = append(PromoteList, ClanMember.Name)
 		}
-		delete(isColeaderCandidate, ClanMember.Name)
+	}
+
+	isColeaderCandidate = map[string]bool{}
+	isOldMember = map[string]bool{}
+	for _, ClanMember := range ClanMembersData.Items {
+		isOldMember[ClanMember.Tag] = true
 		if ClanMember.Donations >= 1000 {
-			isColeaderCandidate[ClanMember.Name] = true
+			isColeaderCandidate[ClanMember.Tag] = true
 		}
 	}
 
