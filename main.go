@@ -8,17 +8,29 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
+	"github.com/go-co-op/gocron"
 )
 
 func main() {
-	isOldMember := map[string]bool{}
-	isColeaderCandidate := map[string]bool{}
+	isOldMember := make(map[string]bool)
+	isColeaderCandidate := make(map[string]bool)
 
-	printDemoteAndPromote(isOldMember, isColeaderCandidate)
+	loc, err := time.LoadLocation("Asia/Taipei")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Clock: ", time.Now().In(loc))
+	scheduler := gocron.NewScheduler(loc)
+	scheduler.Every(1).Sunday().At("22:00").Do(printDemoteAndPromote, isOldMember, isColeaderCandidate)
+
+	fmt.Println("Start Scheduler")
+	scheduler.StartBlocking()
 }
 
 func printDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[string]bool) {
-	ClanMembersData := getClanMembersData("#URLPR", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImQxZGRiMTQxLWZkYjMtNGVlZi05M2UxLTI0OTE4Mzk1ZTY2MCIsImlhdCI6MTY1MDM1MjIwNSwic3ViIjoiZGV2ZWxvcGVyL2YzNTQwYTY3LTFmOTAtMGQ5Yy1hMWYxLTdlYjBkYzBjYmI4OCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyIzNC44My4xMTkuMjE4Il0sInR5cGUiOiJjbGllbnQifV19.Hhk4NLaMN2Dx9N69QabNGJ8DGfCooTS2cME9gGpUVQYYhyrwcNZHiyLpVxO2mUP7cMyH_6uL69UCgAh-Hgx5SA")
+	ClanMembersData := getClanMembersData("#URLPR", "ThisIsClashRoyaleApiKey")
 
 	fmt.Printf("Reason: %s\n", ClanMembersData.Reason)
 	fmt.Printf("Message: %s\n", ClanMembersData.Message)
@@ -70,8 +82,6 @@ func getClanMembersData(clanTag string, ClashRoyaleApiKey string) clanMembersDat
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// fmt.Println(string(responseData))
 
 	var ClanMembersData clanMembersData
 
