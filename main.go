@@ -30,7 +30,7 @@ func main() {
 }
 
 func printDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[string]bool) {
-	ClanMembersData := getClanMembersData("#URLPR", "ThisIsClashRoyaleApiKey")
+	ClanMembersData := getClanMembersData("#URLPR", os.Getenv("clashRoyaleApiKey"))
 
 	fmt.Printf("Reason: %s\n", ClanMembersData.Reason)
 	fmt.Printf("Message: %s\n", ClanMembersData.Message)
