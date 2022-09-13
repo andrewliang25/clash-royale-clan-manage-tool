@@ -1,5 +1,7 @@
 package main
 
+import "time"
+
 type arena struct {
 	Id   int
 	Name string
@@ -30,4 +32,5 @@ type clanMembersData struct {
 type demoteAndPromoteList struct {
 	DemoteList  []string
 	PromoteList []string
+	UpdateTime  time.Time
 }

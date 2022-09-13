@@ -61,9 +61,11 @@ func getDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[st
 
 	Result.DemoteList = DemoteList
 	Result.PromoteList = PromoteList
+	Result.UpdateTime = time.Now()
 
 	fmt.Printf("DemoteList: %v\n", DemoteList)
 	fmt.Printf("PromoteList: %v\n", PromoteList)
+	fmt.Println(Result.UpdateTime)
 }
 
 func getClanMembersData(clanTag string, ClashRoyaleApiKey string) clanMembersData {
