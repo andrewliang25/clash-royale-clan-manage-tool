@@ -9,10 +9,12 @@ import (
 	"net/url"
 	"os"
 	"time"
+
 	"github.com/go-co-op/gocron"
 )
 
 func main() {
+	var Result demoteAndPromoteList
 	isOldMember := make(map[string]bool)
 	isColeaderCandidate := make(map[string]bool)
 
@@ -23,13 +25,13 @@ func main() {
 
 	fmt.Println("Clock: ", time.Now().In(loc))
 	scheduler := gocron.NewScheduler(loc)
-	scheduler.Every(1).Sunday().At("22:00").Do(printDemoteAndPromote, isOldMember, isColeaderCandidate)
+	scheduler.Every(1).Sunday().At("22:00").Do(getDemoteAndPromote, isOldMember, isColeaderCandidate, Result)
 
 	fmt.Println("Start Scheduler")
 	scheduler.StartBlocking()
 }
 
-func printDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[string]bool) {
+func getDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[string]bool, Result demoteAndPromoteList) {
 	ClanMembersData := getClanMembersData("#URLPR", os.Getenv("clashRoyaleApiKey"))
 
 	fmt.Printf("Reason: %s\n", ClanMembersData.Reason)
@@ -56,6 +58,9 @@ func printDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[
 			isColeaderCandidate[ClanMember.Tag] = true
 		}
 	}
+
+	Result.DemoteList = DemoteList
+	Result.PromoteList = PromoteList
 
 	fmt.Printf("DemoteList: %v\n", DemoteList)
 	fmt.Printf("PromoteList: %v\n", PromoteList)

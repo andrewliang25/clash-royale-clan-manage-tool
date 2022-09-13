@@ -26,3 +26,8 @@ type clanMembersData struct {
 	Items   []clanMemberInfo
 	Paging  interface{}
 }
+
+type demoteAndPromoteList struct {
+	DemoteList  []string
+	PromoteList []string
+}
