@@ -2,19 +2,19 @@ package main
 
 import "time"
 
-type arena struct {
+type Arena struct {
 	Id   int
 	Name string
 }
 
-type clanMemberInfo struct {
+type ClanMemberInfo struct {
 	Tag              string
 	Name             string
 	Role             string
 	LastSeen         string
 	ExpLevel         int
 	Trophies         int
-	Arena            arena
+	Arena            Arena
 	ClanRank         int
 	PreviousClanRank int
 	Donations        int
@@ -22,14 +22,14 @@ type clanMemberInfo struct {
 	ClanChestPoints  int
 }
 
-type clanMembersData struct {
+type ClanMembersData struct {
 	Reason  string
 	Message string
-	Items   []clanMemberInfo
+	Items   []ClanMemberInfo
 	Paging  interface{}
 }
 
-type demoteAndPromoteList struct {
+type DemoteAndPromoteList struct {
 	DemoteList  []string
 	PromoteList []string
 	UpdateTime  time.Time

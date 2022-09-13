@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	var Result demoteAndPromoteList
+	var result DemoteAndPromoteList
 	isOldMember := make(map[string]bool)
 	isColeaderCandidate := make(map[string]bool)
 
@@ -25,50 +25,50 @@ func main() {
 
 	fmt.Println("Clock: ", time.Now().In(loc))
 	scheduler := gocron.NewScheduler(loc)
-	scheduler.Every(1).Sunday().At("22:00").Do(getDemoteAndPromote, isOldMember, isColeaderCandidate, Result)
+	scheduler.Every(1).Sunday().At("22:00").Do(getDemoteAndPromote, isOldMember, isColeaderCandidate, &result)
 
 	fmt.Println("Start Scheduler")
 	scheduler.StartBlocking()
 }
 
-func getDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[string]bool, Result demoteAndPromoteList) {
-	ClanMembersData := getClanMembersData("#URLPR", os.Getenv("clashRoyaleApiKey"))
+func getDemoteAndPromote(isOldMember map[string]bool, isColeaderCandidate map[string]bool, result *DemoteAndPromoteList) {
+	clanMembersData := getClanMembersData("#URLPR", os.Getenv("clashRoyaleApiKey"))
 
-	fmt.Printf("Reason: %s\n", ClanMembersData.Reason)
-	fmt.Printf("Message: %s\n", ClanMembersData.Message)
-	fmt.Printf("Items: %v\n", ClanMembersData.Items)
-	fmt.Printf("Count: %d\n", len(ClanMembersData.Items))
+	fmt.Printf("Reason: %s\n", clanMembersData.Reason)
+	fmt.Printf("Message: %s\n", clanMembersData.Message)
+	fmt.Printf("Items: %v\n", clanMembersData.Items)
+	fmt.Printf("Count: %d\n", len(clanMembersData.Items))
 
-	var DemoteList []string
-	var PromoteList []string
+	var demoteList []string
+	var promoteList []string
 
-	for _, ClanMember := range ClanMembersData.Items {
-		if ClanMember.Donations < 70 && isOldMember[ClanMember.Tag] {
-			DemoteList = append(DemoteList, ClanMember.Name)
-		} else if (ClanMember.Donations >= 350 && ClanMember.Role == "member") || (ClanMember.Donations >= 1000 && isColeaderCandidate[ClanMember.Tag]) {
-			PromoteList = append(PromoteList, ClanMember.Name)
+	for _, clanMember := range clanMembersData.Items {
+		if clanMember.Donations < 70 && isOldMember[clanMember.Tag] {
+			demoteList = append(demoteList, clanMember.Name)
+		} else if (clanMember.Donations >= 350 && clanMember.Role == "member") || (clanMember.Donations >= 1000 && isColeaderCandidate[clanMember.Tag]) {
+			promoteList = append(promoteList, clanMember.Name)
 		}
 	}
 
 	isColeaderCandidate = map[string]bool{}
 	isOldMember = map[string]bool{}
-	for _, ClanMember := range ClanMembersData.Items {
-		isOldMember[ClanMember.Tag] = true
-		if ClanMember.Donations >= 1000 {
-			isColeaderCandidate[ClanMember.Tag] = true
+	for _, clanMember := range clanMembersData.Items {
+		isOldMember[clanMember.Tag] = true
+		if clanMember.Donations >= 1000 {
+			isColeaderCandidate[clanMember.Tag] = true
 		}
 	}
 
-	Result.DemoteList = DemoteList
-	Result.PromoteList = PromoteList
-	Result.UpdateTime = time.Now()
+	result.DemoteList = demoteList
+	result.PromoteList = promoteList
+	result.UpdateTime = time.Now()
 
-	fmt.Printf("DemoteList: %v\n", DemoteList)
-	fmt.Printf("PromoteList: %v\n", PromoteList)
-	fmt.Println(Result.UpdateTime)
+	fmt.Printf("DemoteList: %v\n", demoteList)
+	fmt.Printf("PromoteList: %v\n", promoteList)
+	fmt.Println(result.UpdateTime)
 }
 
-func getClanMembersData(clanTag string, ClashRoyaleApiKey string) clanMembersData {
+func getClanMembersData(clanTag string, ClashRoyaleApiKey string) ClanMembersData {
 	client := &http.Client{}
 
 	request, err := http.NewRequest("GET", fmt.Sprintf("https://api.clashroyale.com/v1/clans/%s/members", url.QueryEscape(clanTag)), nil)
@@ -90,9 +90,9 @@ func getClanMembersData(clanTag string, ClashRoyaleApiKey string) clanMembersDat
 		log.Fatal(err)
 	}
 
-	var ClanMembersData clanMembersData
+	var clanMembersData ClanMembersData
 
-	json.Unmarshal(responseData, &ClanMembersData)
+	json.Unmarshal(responseData, &clanMembersData)
 
-	return ClanMembersData
+	return clanMembersData
 }
